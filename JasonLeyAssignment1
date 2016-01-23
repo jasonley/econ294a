@@ -1,0 +1,109 @@
+#0
+firstName <- "Jason"
+lastName  <- "Ley"
+
+print(
+  paste(           
+    firstName,
+    lastName
+  )
+)
+
+studentID <- "1248754"
+print(studentID)
+
+# 1
+library(foreign)
+df.dta <- read.dta(file = "https://github.com/EconomiCurtis/econ294_2015/raw/master/data/NHIS_2007_dta.dta")
+df.csv <- read.csv(file = "https://github.com/EconomiCurtis/econ294_2015/raw/master/data/NHIS_2007_CSV.csv")
+df.td <- read.delim(file = "https://github.com/EconomiCurtis/econ294_2015/raw/master/data/NHIS_2007_TSV.txt")
+load(url("https://github.com/EconomiCurtis/econ294_2015/raw/master/data/NHIS_2007_RData.RData"))
+print("The name assigned to this RData file is NHIS_2007_RData")
+
+#2
+
+setwd("~/School/Grad School/econ294a2") 
+print(
+  paste(
+    "The .dta file is" ,
+    file.info("NHIS_2007_dta.dta")$size/1000,
+    "KB")
+)
+print(
+  paste(
+    "The .csv file is" ,
+    file.info("NHIS_2007_CSV.csv")$size/1000,
+    "KB")
+)
+print(
+  paste(
+    "The .txt file is" ,
+    file.info("NHIS_2007_TSV.txt")$size/1000,
+    "KB")
+)
+print(
+  paste(
+    "The .RData file is" ,
+    file.info("NHIS_2007_RData.RData")$size/1000,
+    "KB")
+)  
+
+print("The .RData file is the smallest file size. Besides the .dta file, the .RData file is the smallest while the .cvs and ,txt files are larger with roughly the same size KB. Probably due to data files being smaller and text files being larger.")
+
+
+#3
+df.rdata <- NHIS_2007_RData 
+rm(NHIS_2007_RData)
+print(typeof(df.rdata))
+print(class(df.rdata))
+print("The type of data for df.rdata is a list, and the class is a data.frame")
+print(length(df.rdata))
+print(dim(df.rdata))
+print(nrow(df.rdata))
+print(ncol(df.rdata))
+print(summary(df.rdata))
+
+#4
+df <- read.dta("https://github.com/EconomiCurtis/econ294_2015/raw/master/data/org_example.dta")
+print(str(df))
+print("There are 1119754 observations and 30 variables")
+print(summary(df$rw))
+
+#5
+v <- c(1:7, 4, NULL, NA)
+print(length(v))
+print("The length command reports one less value for vector v because the value NULL is not recognized as an actual value in vectors, since NULL is usually used for removing values.")
+print(mean(v, na.rm = TRUE))
+
+#6
+x <- matrix(data = 1:9, nrow = 3, ncol = 3, byrow = TRUE)
+print(x)
+xtranspose <- t(x)
+print(xtranspose)
+xeigen <- eigen(x)
+print(xeigen)
+y <- matrix(data = c(1,2,3,3,2,1,2,3,0), nrow = 3, ncol = 3, byrow = TRUE)
+print(y)
+yinverse <- solve(y)
+print(yinverse)
+print(y%*%yinverse)
+print("Multiplying a matrix by its inverse is called the identity matrix.")
+
+#7
+carat <- c(5,2,0.5,1.5,5,NA,3)
+cut <- c('fair', 'good', 'very good', 'good', 'fair', 'Ideal', 'fair')
+clarity <- c("SI1", "I1", "VI1", "VS1", "IF", "VVS2", NA)
+price <- c(850, 450, 450, NA , 750, 980, 420)
+diamonds <- data.frame(carat, cut, clarity, price)
+print(diamonds)
+print(mean(diamonds$price, na.rm = TRUE))
+fair <- diamonds[diamonds$cut == 'fair', ]
+print(fair)
+print(mean(dfair$price), na.rm = TRUE)
+notfair <- diamonds[diamonds$cut != 'fair', ]
+print(notfair)
+print(mean(notfair$price, na.rm = TRUE))
+diamonds2 <- diamonds[diamonds$carat > 2 & (diamonds$cut == 'Ideal' | diamonds$cut == 'very good'), ]
+print(diamonds2)
+print(median(diamonds2$price))
+print("There is no median price for diamands greater than 2 carats that are cut Ideal or Very good since no observations in the data frame meet this requirement.")
