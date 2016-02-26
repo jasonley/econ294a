@@ -1,0 +1,107 @@
+print("Jason Ley")
+print(1248754)
+
+
+### Problem 1
+flights <- 
+  read.csv(
+    "https://raw.githubusercontent.com/EconomiCurtis/econ294_2015/master/data/flights.csv",
+    stringsAsFactors=F, header=T)
+planes <- 
+  read.csv("https://raw.githubusercontent.com/EconomiCurtis/econ294_2015/master/data/planes.csv",
+           stringsAsFactors=F, header=T)
+weather<-
+  read.csv("https://raw.githubusercontent.com/EconomiCurtis/econ294_2015/master/data/weather.csv",
+           stringsAsFactors=F, header=T)
+airports<-
+  read.csv("https://raw.githubusercontent.com/EconomiCurtis/econ294_2015/master/data/airports.csv",
+           stringsAsFactors =F, header=T)
+### Problem 2 
+
+weather$date<-as.Date(weather$date)
+flights$date<-as.Date(flights$date)
+
+### Problem 3
+
+flights.2a <- subset(flights, dest == "SFO" | dest == "OAK")
+nrow(flights.2a)
+
+flights.2b <- subset(flights, dep_delay >=  60 | arr_delay >=60)
+nrow(flights.2b)
+
+flights.2c <- subset(flights, arr_delay >2 * dep_delay)
+nrow(flights.2c)
+
+### Problem 4
+
+library(dplyr)
+
+select(flights, contains("delay"))
+select(flights, ends_with("delay"))
+select(flights, 1:3)
+
+### Problem 5
+# a
+
+arrange(flights, -dep_delay) %>%
+head(5)
+
+# b
+
+arrange(flights, arr_delay - dep_delay) %>%
+head(5)
+
+
+### Problem 6
+
+flights <- mutate(flights, speed=dist/(time/60))
+flights <- mutate(flights, delta=arr_delay-dep_delay)
+
+# a
+arrange(flights, speed) %>%
+head(5)
+
+# b
+arrange(flights, delta) %>%
+head(5)
+
+# c
+arrange(flights, -delta) %>%
+head(5)
+
+### Problem 7 
+# a
+
+flights.7a<-flights %>% group_by(carrier) %>%
+  
+  summarize(
+    cancelled_flights = sum(cancelled, na.rm=T),
+    total_flights = n(),
+    percent_cancelled=(cancelled_flights/total_flights),
+    min = min(delta,na.rm=T),
+    quant1 = quantile(delta,0.25,na.rm=T),
+    median = median(delta,na.rm=T),
+    mean = mean(delta,na.rm=T),
+    quant3 = quantile(delta,0.75,na.rm=T),
+    quant90 = quantile(delta,0.90,na.rm=T),
+    max = max(delta,na.rm=T)
+  )
+
+flights.7a%>%arrange(desc(percent_cancelled))
+print(flights.7a)
+
+# b
+day_delay <- dplyr::filter(flights, !is.na(dep_delay))%>%
+  group_by(date)%>%
+  summarize(
+    delay = mean(dep_delay),
+    n=n()
+  )%>%filter(n>10)
+
+cat(" day_delay <- dplyr::filter(flights, !is.na(dep_delay))%>%
+  group_by(date)%>%
+  summarize(
+    delay = mean(dep_delay),
+    n=n()
+  )%>%filter(n>10)
+")
