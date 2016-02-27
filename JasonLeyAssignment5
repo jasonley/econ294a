@@ -1,0 +1,60 @@
+install.packages("ggplot2")
+library(ggplot2)
+
+###problem 1
+#a
+
+p1a <- ggplot(data=diamonds, aes(x=x*y*z, y=price)
+    )
+p1a + geom_point(aes(colour = clarity, size=carat)) + 
+  scale_x_continuous(trans='log10') +
+  scale_y_continuous(trans='log10')
+
+#b
+p1b <- ggplot(data=diamonds, aes(x=carat, colour = clarity, size=carat)
+              ) 
+p1b + geom_histogram(aes(y = ..density..)) + facet_grid("cut ~ .") + geom_density()
+
+#c
+p1c <- ggplot(data=diamonds, aes(x=cut, y=price)
+              )
+p1c + geom_violin() + geom_jitter(aes(alpha = 0.015))
+
+###problem 2
+#a
+library(foreign)
+library(dplyr)
+org_example <- read.dta(file="https://github.com/EconomiCurtis/econ294_2015/raw/master/data/org_example.dta")
+org_example.plotprep <- org_example %>%
+  group_by(year, month) %>%
+  summarize(
+    rw.med=median(rw, na.rm=T),
+    rw.10 = quantile(rw, 0.1, na.rm=T),
+    rw.90 = quantile(rw, 0.9, na.rm=T),
+    rw.25 = quantile(rw, 0.25, na.rm=T),
+    rw.75 = quantile(rw, 0.75, na.rm=T)
+   ) %>%
+  mutate(
+    date=paste(year,month,"01", sep = "-"),
+    date=as.Date(date,format = "%Y - %m - %d")
+  )
+
+
+
+p3<-ggplot(org_example.plotprep, aes(x=date, y=rw.med))
+p3 + 
+  geom_line() +
+  geom_ribbon(aes(ymin=rw.10, ymas = rw.90), alpha =0.2)
+geom_ribbon(aes(ymin=rw.25, ymas = rw.75), alpha =0.5)
+
+#b
+org_example.educ <- org_example %>%
+  group_by(year,month,educ) %>%
+  mutate(
+    date=paste(year,month,"01", sep = "-"),
+    date=as.Date(date,format = "%Y - %m - %d")
+  )
+p3b<-ggplot(org_example.educ, aes(x=date, y=rw.med))
+p3b + 
+  geom_line()
+    
