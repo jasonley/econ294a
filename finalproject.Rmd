@@ -1,0 +1,69 @@
+---
+title: "econ294a final project"
+author: "Jason Ley"
+date: "March 16, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r package-load, message=F, warning=F, echo=F}
+library("dplyr") 
+library("RSQLite")
+library("nycflights13")
+library("ggplot2")
+```
+
+```{r, echo=F, message=F}
+my_db <- src_sqlite("my_db.sqlite3", create = T)
+
+# flights_sqlite <- copy_to(
+#  my_db, flights, temporary = FALSE, 
+#  indexes = list(
+#    c("year", "month", "day"), 
+#    "carrier", 
+#    "tailnum")
+#  )
+
+flights = tbl(my_db, "flights") %>% 
+  collect() %>%
+  mutate(canceled = is.na(arr_time))
+
+canceledflights <- flights %>% filter(canceled==T)
+canceledflights2 <- flights %>% filter(canceled==T,!is.na(dep_delay))
+
+weather <- canceledflights2 %>%
+  group_by(year,month,day,hour) %>%
+  left_join(weather)
+```
+
+```{r, results='asis', echo=F}
+knitr::kable(weather, caption="Table of cancelled flights and departure delays")
+```
+
+
+  By analyzing the table above with cancelled flights and their associated departure delays, we can examine the weather. In general, when there is weather info for a flight, it seems to look average. The wind speed is not too high, and temperatures are normal.
+One interesting observation to note is that the only airport terminal origin for the cancelled flights that actually has weather info, is EWR in New Jersey.
+
+
+  We can also observe time characteristics from the table. The most frequent time of the day that flights are cancelled is between the hours of 14-20. When examining the month and day of the cancelled flights, we find that the days of the week are generally sporadic.
+The time of the year that the longest flight delays tend to happen is around summer time, from month 6 to month 8. Most likely due to the high frequency of summer vacations with customers. 
+
+
+  As for the flight destinations for the cancelled flights, they are also genereally sporadic, in that not any airport terminal is frequently a place with cancelled flights or high delays.
+  
+  
+  Characteristics of the plane show that the carriers that most often had cancelled flights are 9E, AA, EV, MQ, UA. We show this in the following density histogram plot. Other characteristics for planes of canceled flights are generally sporadic as well.
+
+
+```{r, fig.height = 3., fig.width=6, fig.cap = "Histogram of cancelled flight carriers"}
+
+ggplot(data = weather, aes(x=carrier), aes(y = ..density..), geom_histogram) + geom_density()
+```
+
+
+
+  In conclusion, we can see that flights are generally cancelled and show frequent high delays around the summertime of the year, between 2:00 pm and 8:00 pm. Weather is usually inconsistent in its patterns, as well as the flight destination airports also being inconsistent. Flight carriers that exhibit the most frequent cancellation are usually 9E, AA, EV, MQ, and UA.
